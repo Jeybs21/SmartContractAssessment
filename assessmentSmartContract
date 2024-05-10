@@ -1,0 +1,41 @@
+// SPDX-License-Identifier: MIT
+pragma solidity ^0.8.0;
+
+contract ExampleContract {
+    address public owner;
+    uint256 public value;
+
+    constructor() {
+        owner = msg.sender;
+    }
+
+    // Function to set a new value
+    function setValue(uint256 _newValue) public {
+        // Require that only the owner can set the value
+        require(msg.sender == owner, "Only the owner can set the value");
+
+        // Value must be greater than 0
+        require(_newValue > 0, "Value must be greater than 0");
+
+        // Set the new value
+        value = _newValue;
+    }
+
+    // Function to withdraw funds
+    function withdraw() public {
+        // Only the owner can withdraw funds
+        require(msg.sender == owner, "Only the owner can withdraw funds");
+
+        // Assert that the contract has enough balance
+        assert(address(this).balance >= value);
+
+        // Send the funds to the owner
+        payable(owner).transfer(value);
+    }
+
+    // Function to intentionally cause a revert
+    function causeRevert() public pure {
+        // Revert with a custom error message
+        revert("This function intentionally causes a revert");
+    }
+}
