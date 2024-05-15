@@ -1,54 +1,61 @@
-// SPDX-License-Identifier: MIT
-pragma solidity 0.8.18;
+# Project Title
 
-contract SafeBank {
-    // Mapping to keep track of each user's balance
-    mapping(address => uint256) public balances;
+Solidity Smart Contract
 
-    // Event to log deposits
-    event Deposit(address indexed user, uint256 amount);
+## Description
 
-    // Event to log withdrawals
-    event Withdrawal(address indexed user, uint256 amount);
+This project consists of a Solidity smart contract named JBSmartContract, which serves as an educational example for understanding error handling mechanisms in Solidity. The contract includes functions to demonstrate the usage of require(), assert(), and revert() statements for input validation and error handling. Users can interact with the contract to set and retrieve a value, while the contract ensures that certain conditions are met before executing the desired operations.
 
-    // Function to deposit Ether into the bank
-    function deposit() public payable {
-        require(msg.value > 0, "Deposit amount must be greater than zero");
+## Getting Started
 
-        // Update the balance of the sender
-        balances[msg.sender] += msg.value;
+### Installing
 
-        // Emit a deposit event
-        emit Deposit(msg.sender, msg.value);
-    }
+To use this contract, follow these steps:
 
-    // Function to withdraw Ether from the bank
-    function withdraw(uint256 _amount) public {
-        require(_amount > 0, "Withdrawal amount must be greater than zero");
-        require(balances[msg.sender] >= _amount, "Insufficient balance");
+Download or copy the provided Solidity contract code.
+Open a Solidity development environment such as Remix IDE.
 
-        // Update the balance of the sender
-        balances[msg.sender] -= _amount;
+### Executing program
 
-        // Transfer the amount to the sender
-        (bool success, ) = msg.sender.call{value: _amount}("");
-        require(success, "Withdrawal failed");
+Follow these steps to deploy and interact with the contract:
 
-        // Emit a withdrawal event
-        emit Withdrawal(msg.sender, _amount);
-    }
+Deploy the contract:
 
-    // Function to check the contract's balance
-    function checkContractBalance() public view returns (uint256) {
-        // Use assert to check for an invariant condition
-        uint256 contractBalance = address(this).balance;
-        assert(contractBalance >= 0);
-        return contractBalance;
-    }
+Compile the JBSmartContract.sol file using the Solidity compiler.
+Deploy the contract on an Ethereum network of your choice (e.g., JavaScript VM, Rinkeby, etc.).
+Interacting with the contract:
 
-    // Function to force a revert for demonstration purposes
-    function forceRevert() public pure {
-        // Force a revert with a custom error message
-        revert("This is a forced revert for demonstration purposes");
-    }
-}
+Use the provided functions to interact with the contract:
+setValue(uint256 _newValue): Set a new value for the value state variable. Ensure that the new value is greater than zero.
+assertExample1(uint256 _num): Test the assert() statement functionality by providing a non-zero number.
+revertExample1(uint256 _num): Test the revert() statement functionality by providing a non-zero number.
+
+// Deploy the contract
+deploy();
+
+// Set a new value (replace <newValue> with a non-zero number)
+setValue(<newValue>);
+
+// Test assert functionality (replace <num> with a non-zero number)
+assertExample1(<num>);
+
+// Test revert functionality (replace <num> with a non-zero number)
+revertExample1(<num>);
+
+
+## Help
+
+If you encounter any issues while deploying or interacting with the contract, ensure the following:
+
+Use the correct Solidity compiler version (0.8.0 or above).
+Provide non-zero values where required.
+Check the Remix console for detailed error messages if the contract functions do not behave as expected.
+
+## Authors
+
+*John Benedict Miranda
+
+
+## License
+
+This project is licensed under the MIT License - see the LICENSE.md file for details
