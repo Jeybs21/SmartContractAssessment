@@ -1,24 +1,67 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.0;
 
-contract JBSmartContract {
-    uint256 public value;
+contract SimpleLottery {
+    address public owner;
+    address[] public players;
+    bool public lotteryEnded;
 
-    function setValue(uint256 _newValue) external {
-        require(_newValue != 0, "The value must be greather than zero");
-        value = _newValue;
+    constructor() {
+        owner = msg.sender;
+        lotteryEnded = false;
     }
 
-    function assertExample1(uint256 _num) external pure returns (uint256) {
-        assert(_num != 0);
-        return _num;
+    modifier onlyOwner() {
+        require(msg.sender == owner, "Caller is not the owner");
+        _;
     }
 
-    function revertExample1(uint256 _num) external pure returns (uint256) {
-        if (_num == 0) {
-            revert("The value must be greather than zero");
+    modifier lotteryIsActive() {
+        require(!lotteryEnded, "Lottery has ended");
+        _;
+    }
+
+    function enter() public payable lotteryIsActive {
+        require(msg.value == 0.1 ether, "Entry fee is 0.1 Ether");
+        players.push(msg.sender);
+    }
+
+    function drawWinner() public onlyOwner lotteryIsActive {
+        require(players.length > 0, "No players in the lottery");
+
+        uint index = random() % players.length;
+        address winner = players[index];
+        
+        // Ensure the contract has enough balance to pay the winner
+        assert(address(this).balance >= 0.1 ether * players.length);
+
+        // Transfer the prize to the winner
+        payable(winner).transfer(address(this).balance);
+        
+        // Mark the lottery as ended
+        lotteryEnded = true;
+    }
+
+    function random() private view returns (uint) {
+        return uint(keccak256(abi.encodePacked(block.difficulty, block.timestamp, players)));
+    }
+
+    function endLottery() public onlyOwner {
+        require(!lotteryEnded, "Lottery has already ended");
+        if(players.length == 0) {
+            revert("No players to end lottery");
         }
 
-        return _num;
+        // If no one entered, refund the owner and end the lottery
+        selfdestruct(payable(owner));
+    }
+
+    // Fallback function to handle unexpected ether transfers
+    fallback() external payable {
+        revert("Use the enter function to participate in the lottery");
+    }
+
+    receive() external payable {
+        enter();
     }
 }
